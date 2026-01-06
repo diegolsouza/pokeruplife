@@ -15,18 +15,11 @@
     }
 
     .blinds {
-        font-size: clamp(36px, 80vw, 220px);
-        font-weight: bold;
-        margin-bottom: 2vw;
-    
-        /* 🔥 evita quebra de linha */
+        display: inline-block;
         white-space: nowrap;
-    
-        /* segurança extra */
-        max-width: 100%;
-        overflow: hidden;
+        text-align: center;
     }
-
+    
     .timer {
         font-size: clamp(32px, 20vw, 72px);
         margin-bottom: 2vw;
@@ -123,7 +116,7 @@
 
     function updateDisplay() {
         const level = levels[levelIndex];
-        blindsEl.textContent = `${level.sb} / ${level.bb}`;
+        blindsEl.textContent = `${level.sb}/${level.bb}`;
 
         anteEl.style.display = level.bb >= 600 ? "block" : "none";
 
