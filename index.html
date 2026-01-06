@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Timer de Poker</title>
+
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #000000;
+        color: #ffffff;
+        text-align: center;
+        padding: 4vw;
+        transition: background-color 0.5s;
+    }
+
+    .blinds {
+        font-size: clamp(50px, 40vw, 180px);
+        font-weight: bold;
+        margin-bottom: 2vw;
+    }
+
+    .timer {
+        font-size: clamp(32px, 20vw, 72px);
+        margin-bottom: 2vw;
+    }
+
+    .final-text {
+        font-size: clamp(32px, 15vw, 72px);
+        font-weight: bold;
+        margin-bottom: 2vw;
+    }
+
+    .ante {
+        font-size: clamp(26px, 20vw, 56px);
+        font-weight: bold;
+        color: #ffd700;
+        margin-bottom: 3vw;
+        display: none;
+    }
+
+    .controls {
+        display: flex;
+        justify-content: center;
+        gap: 1.5vw;
+        flex-wrap: wrap;
+    }
+
+    button {
+        font-size: clamp(18px, 2.5vw, 28px);
+        padding: 1vw 2vw;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        background-color: #333;
+        color: #fff;
+    }
+
+    button:hover {
+        background-color: #555;
+    }
+
+    .pause {
+        background-color: #1e90ff;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="blinds" id="blinds">50 / 100</div>
+<div class="timer" id="timer">20:00</div>
+<div class="final-text" id="finalText" style="display:none;">até o final</div>
+<div class="ante" id="ante">⚠️ ANTE EM JOGO</div>
+
+<div class="controls">
+    <button onclick="prevLevel()">⏮</button>
+    <button onclick="nextLevel()">⏭</button>
+    <button onclick="addMinute()">➕</button>
+    <button onclick="removeMinute()">➖</button>
+    <button class="pause" id="pauseBtn" onclick="togglePause()">⏸ Pausar</button>
+</div>
+
+<audio id="siren">
+    <source src="https://diegolsouza.github.io/pokeruplife/sirene_sem_inicio.ogg">
+</audio>
+
+<script>
+    const levels = [
+        { sb: 50, bb: 100 },
+        { sb: 100, bb: 200 },
+        { sb: 150, bb: 300 },
+        { sb: 200, bb: 400 },
+        { sb: 300, bb: 600 },
+        { sb: 400, bb: 800 },
+        { sb: 600, bb: 1200 },
+        { sb: 1000, bb: 2000 },
+        { sb: 1500, bb: 3000, final: true }
+    ];
+
+    let levelIndex = 0;
+    let timeLeft = 20 * 60;
+    let paused = false;
+
+    const pauseBtn = document.getElementById("pauseBtn");
+    const blindsEl = document.getElementById("blinds");
+    const timerEl = document.getElementById("timer");
+    const finalTextEl = document.getElementById("finalText");
+    const anteEl = document.getElementById("ante");
+    const siren = document.getElementById("siren");
+
+    function playSiren() {
+        siren.currentTime = 0;
+        siren.play();
+    }
+
+    function updateDisplay() {
+        const level = levels[levelIndex];
+        blindsEl.textContent = `${level.sb} / ${level.bb}`;
+
+        anteEl.style.display = level.bb >= 600 ? "block" : "none";
+
+        if (level.final) {
+            timerEl.style.display = "none";
+            finalTextEl.style.display = "block";
+        } else {
+            timerEl.style.display = "block";
+            finalTextEl.style.display = "none";
+        }
+    }
+
+    function updateTimer() {
+        if (paused) return;
+
+        const level = levels[levelIndex];
+        if (level.final) return;
+
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+
+        timerEl.textContent =
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        if (timeLeft > 0) {
+            timeLeft--;
+        } else {
+            levelIndex++;
+            timeLeft = 20 * 60;
+            playSiren();
+            updateDisplay();
+        }
+    }
+
+    function togglePause() {
+        paused = !paused;
+
+        if (paused) {
+            document.body.style.backgroundColor = "#8f1923";
+            pauseBtn.textContent = "▶ Continuar";
+        } else {
+            document.body.style.backgroundColor = "#000000";
+            pauseBtn.textContent = "⏸ Pausar";
+        }
+    }
+
+    function addMinute() {
+        if (!levels[levelIndex].final) timeLeft += 60;
+    }
+
+    function removeMinute() {
+        if (!levels[levelIndex].final && timeLeft >= 60) timeLeft -= 60;
+    }
+
+    function nextLevel() {
+        if (levelIndex < levels.length - 1) {
+            levelIndex++;
+            timeLeft = 20 * 60;
+            playSiren();
+            updateDisplay();
+        }
+    }
+
+    function prevLevel() {
+        if (levelIndex > 0) {
+            levelIndex--;
+            timeLeft = 20 * 60;
+            playSiren();
+            updateDisplay();
+        }
+    }
+
+    updateDisplay();
+    updateTimer();
+    setInterval(updateTimer, 1000);
+</script>
+
+</body>
+</html>
