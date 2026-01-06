@@ -15,9 +15,16 @@
     }
 
     .blinds {
-        font-size: clamp(40px, 30vw, 180px);
+        font-size: clamp(36px, 9vw, 120px);
         font-weight: bold;
         margin-bottom: 2vw;
+    
+        /* 🔥 evita quebra de linha */
+        white-space: nowrap;
+    
+        /* segurança extra */
+        max-width: 100%;
+        overflow: hidden;
     }
 
     .timer {
