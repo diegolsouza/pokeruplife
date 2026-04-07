@@ -159,15 +159,10 @@
         if (timeLeft > 0) {
             timeLeft--;
         } else {
-            #levelIndex++;
-            #timeLeft = 20 * 60;
-            #playSiren();
-            #updateDisplay();
-            if (levelIndex < levels.length - 1) {
-                levelIndex++;
-                timeLeft = 20 * 60;
-                playSiren();
-                updateDisplay();
+            levelIndex++;
+            timeLeft = 20 * 60;
+            playSiren();
+            updateDisplay();
             }
         }
     }
