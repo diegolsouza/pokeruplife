@@ -117,15 +117,19 @@
     const siren = document.getElementById("siren");
 
     function playSiren() {
-        siren.pause();
-        siren.currentTime = 0;
+        try {
+            siren.pause();
+            siren.currentTime = 0;
     
-        const playPromise = siren.play();
+            const playPromise = siren.play();
     
-        if (playPromise !== undefined) {
-            playPromise.catch(error => {
-                console.log('Erro ao tocar sirene:', error);
-            });
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log('Erro ao tocar sirene:', error);
+                });
+            }
+        } catch (error) {
+            console.log('Falha ao tocar sirene:', error);
         }
     }
 
@@ -146,23 +150,24 @@
 
     function updateTimer() {
         if (paused) return;
-
+    
         const level = levels[levelIndex];
-        if (level.final) return;
-
+        if (!level || level.final) return;
+    
         let minutes = Math.floor(timeLeft / 60);
         let seconds = timeLeft % 60;
-
+    
         timerEl.textContent =
             `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
+    
         if (timeLeft > 0) {
             timeLeft--;
         } else {
-            levelIndex++;
-            timeLeft = 20 * 60;
-            playSiren();
-            updateDisplay();
+            if (levelIndex < levels.length - 1) {
+                levelIndex++;
+                timeLeft = 20 * 60;
+                updateDisplay();
+                playSiren();
             }
         }
     }
