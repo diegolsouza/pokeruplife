@@ -88,7 +88,7 @@
     <button class="pause" id="pauseBtn" onclick="togglePause()">⏸ Pausar</button>
 </div>
 
-<audio id="siren">
+<audio id="siren" preload="auto">
     <source src="https://diegolsouza.github.io/pokeruplife/sirene_sem_inicio.ogg">
 </audio>
 
@@ -117,8 +117,16 @@
     const siren = document.getElementById("siren");
 
     function playSiren() {
+        siren.pause();
         siren.currentTime = 0;
-        siren.play();
+    
+        const playPromise = siren.play();
+    
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log('Erro ao tocar sirene:', error);
+            });
+        }
     }
 
     function updateDisplay() {
@@ -151,10 +159,16 @@
         if (timeLeft > 0) {
             timeLeft--;
         } else {
-            levelIndex++;
-            timeLeft = 20 * 60;
-            playSiren();
-            updateDisplay();
+            #levelIndex++;
+            #timeLeft = 20 * 60;
+            #playSiren();
+            #updateDisplay();
+            if (levelIndex < levels.length - 1) {
+                levelIndex++;
+                timeLeft = 20 * 60;
+                playSiren();
+                updateDisplay();
+            }
         }
     }
 
